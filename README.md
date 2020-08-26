@@ -1,7 +1,3 @@
-## OSM Scripts
-
-Just a collection of scripts that I sometimes use to extract graphs from Open Street Maps.
-
 ## Usage
 
 Install npm modules (once):
@@ -13,13 +9,13 @@ npm install
 To download JSON file with all roads in the area that matches your search query:
 
 ```
-node 0.download-city-roads Bellevue > data/bellevue.json
+node 0.get-search-query.js Edinburgh
 ```
 
 To convert it to binary format of a graph:
 
 ```
-node 1.save-roads-graph.js data/bellevue.json
+node 1.save-roads-graph.js data/edinburgh.json
 ```
 
 The graph will be saved in a binary format that is described here: 
