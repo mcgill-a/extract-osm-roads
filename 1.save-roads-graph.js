@@ -72,15 +72,12 @@ function saveResults() {
 
   var nodesToDelete = new Set();
   graph.forEachNode(node => {
-    let data = nodes.get(node.id); // THIS IS THE DATA TO BE USED - LAT LON
-    //console.log(data);
-
+    let data = nodes.get(node.id);
+    // Keep a replica of the data to restore the lat/lon
     let backup_node_data = data;
 
     if (!data) throw new Error('missing data for ' + node.id);
-
     var nodeData = project(data.lon, data.lat);
-    //console.log(nodeData);
     let xyID = id(nodeData.x, nodeData.y);
     let prevNode = latLonToNodeId.get(xyID)
     if (prevNode) {
@@ -91,13 +88,11 @@ function saveResults() {
     } else {
       latLonToNodeId.set(xyID, node);
     }
-
+    // Add the lat/lon back into the node data 
     nodeData.lat = backup_node_data.lat;
     nodeData.lon = backup_node_data.lon;
     node.data = nodeData;
-    //console.log(node.data);
     xyBBox.addPoint(node.data.x, node.data.y);
-    //node.data = backup_node_data;
   });
 
   nodesToDelete.forEach(nodeId => {
@@ -115,12 +110,10 @@ function saveResults() {
     let movedBbox = new BBox();
 
     graph.forEachNode(node => {
-      //console.log(node.data.x);
       node.data.x = Math.round(node.data.x - dx);
       node.data.y = Math.round(node.data.y - dy);
       movedBbox.addPoint(node.data.x, node.data.y);
     });
-
 
     console.log('moved bbox', movedBbox);
   }
@@ -128,8 +121,11 @@ function saveResults() {
 
 function writeGraph(fileName, graph) {
   let nodeIdMap = new Map();
+  // Save the lat/lon binary file
   saveNodes(fileName + '.ll.co.bin', graph, nodeIdMap, "ll");
+  // Save the xy binary file
   saveNodes(fileName + '.xy.co.bin', graph, nodeIdMap, "xy");
+  // Save the node id links binary file
   saveLinks(fileName + '.gr.bin', graph, nodeIdMap);
 }
 
@@ -138,19 +134,20 @@ function saveNodes(fileName, graph, nodeIdMap, type) {
   var buf = new Buffer(nodeCount * 4 * 2);
   var idx = 0;
   graph.forEachNode(p => {
-    //console.log(p);
     nodeIdMap.set(p.id, 1 + idx / 8);
+    // sanity check
     if (idx == 0) {
       console.log(p);
-      //console.log(p.data.lat * 1000000, idx);
     }
 
-    if (type == "ll") {
+    
+    if (type == "ll") { // lat lon
+      // times lat/lon by 1,000,000 to convert into 32 bit signed integer
       buf.writeInt32LE(p.data.lat * 1000000, idx);
       idx += 4;
       buf.writeInt32LE(p.data.lon * 1000000, idx);
       idx += 4;
-    } else if (type == "xy") {
+    } else if (type == "xy") { // xy
       buf.writeInt32LE(p.data.x, idx);
       idx += 4;
       buf.writeInt32LE(p.data.y, idx);
