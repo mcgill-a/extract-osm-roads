@@ -6,13 +6,17 @@ Install npm modules (once):
 npm install
 ```
 
-To download JSON file with all roads in the area that matches your search query:
+To generate a search query that matches all roads in an area:
 
 ```
 node 0.get-search-query.js Edinburgh
 ```
 
-To convert it to binary format of a graph:
+Run the query on https://overpass-turbo.eu/
+
+Export the results as .JSON using "raw data directly from Overpass API"
+
+To convert it to the binary format of a graph:
 
 ```
 node 1.save-roads-graph.js data/edinburgh.json

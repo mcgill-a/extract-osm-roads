@@ -11,7 +11,7 @@ console.info('Here is your search query for ', searchQuery);
 console.info("------------------");
 console.info(getQuery());
 console.info("------------------");
-console.info("Enter the query @ http://overpass-turbo.eu/");
+console.info("Enter the query @ https://overpass-turbo.eu/");
 console.info("Download the .JSON file");
 
 function getQuery() {
